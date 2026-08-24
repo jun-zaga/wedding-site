@@ -1,0 +1,262 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap");
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #30423a;
+  background: #fbf7f4;
+  font-synthesis: none;
+
+  --cream: #fbf7f4;
+  --paper: #fffdfb;
+  --alice-blue: #eef5fb;
+  --blush: #f3d9e1;
+  --soft-rose: #e7b5c3;
+  --rose: #c66f86;
+  --deep-rose: #a44e65;
+  --green: #4b6957;
+  --sage: #86a188;
+  --gold: #c7ad7a;
+  --line: rgba(75, 105, 87, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: linear-gradient(180deg, var(--cream), var(--alice-blue));
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+/* NAV */
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 20;
+  height: 78px;
+  padding: 0 clamp(20px, 6vw, 90px);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: white;
+  background: linear-gradient(
+    to bottom,
+    rgba(25, 35, 29, 0.62),
+    transparent
+  );
+}
+
+.monogram {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.08em;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.nav-rsvp {
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  padding: 9px 16px;
+  border-radius: 999px;
+}
+
+.menu-button {
+  display: none;
+  border: 0;
+  background: transparent;
+  color: white;
+  font-size: 1.6rem;
+}
+
+/* HERO */
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  position: relative;
+
+  color: white;
+  text-align: center;
+
+  background:
+    url("/photos/hero-lake.jpg")
+    center 48% / cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    rgba(24, 33, 27, 0.3),
+    rgba(24, 33, 27, 0.65)
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 120px 20px 70px;
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+h1,
+h2,
+.footer-names {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+
+  font-size: clamp(4rem, 10vw, 8rem);
+  line-height: 0.95;
+}
+
+h1 span {
+  color: var(--blush);
+  font-style: italic;
+}
+
+.three-stone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin: 24px auto 4px;
+
+  filter: drop-shadow(
+    0 4px 10px rgba(0, 0, 0, 0.18)
+  );
+}
+
+.oval-stone,
+.pear,
+.schedule-oval,
+.schedule-pear {
+  display: block;
+
+  border: 1px solid rgba(220, 238, 252, 0.95);
+
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(238, 248, 255, 0.98) 38%,
+    rgba(207, 232, 250, 0.92) 68%,
+    rgba(255, 255, 255, 0.98) 100%
+  );
+
+  box-shadow:
+    inset 0 0 8px rgba(255, 255, 255, 0.9),
+    0 8px 22px rgba(147, 190, 222, 0.18);
+}
+
+.oval-stone {
+  width: 25px;
+  height: 35px;
+  border-radius: 50%;
+}
+
+.pear,
+.schedule-pear {
+  width: 18px;
+  height: 25px;
+  border-radius: 58% 58% 58% 10%;
+}
+
+.pear-left,
+.schedule-pear-left {
+  transform: rotate(38deg);
+}
+
+.pear-right,
+.schedule-pear-right {
+  transform: scaleX(-1) rotate(38deg);
+}
+
+.hero-date {
+  margin: 28px 0 8px;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+.countdown {
+  margin: 0 0 32px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* BUTTONS */
+
+.primary-button,
+.secondary-button {
+  display: inline-block;
+
+  border-radius: 999px;
+  padding: 14px 25px;
+
+  text-decoration: none;
+  font-weight: 600;
+
+  border: 1px solid transparent;
+
+  cursor: pointer;
+}
+
+.primary-button {
+  background: linear-gradient(
+    135deg,
+    var(--paper),
+    #ffeef3
+  );
+
+  color: var(--green);
+}
+
+.secondary-button {
+  margin-top: 36px;
+
+  border-color: var(--green);
+  background: transparent;
+}
+

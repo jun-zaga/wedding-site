@@ -1,0 +1,323 @@
+/* FAQ */
+
+.faq {
+  background: var(--paper);
+}
+
+.faq-grid {
+  max-width: 900px;
+  margin: auto;
+
+  border-top:
+    1px solid var(--line);
+}
+
+details {
+  border-bottom:
+    1px solid var(--line);
+
+  padding: 22px 0;
+}
+
+summary {
+  cursor: pointer;
+
+  font-family:
+    "Cormorant Garamond",
+    serif;
+
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+details p {
+  color: #647067;
+  line-height: 1.7;
+}
+
+/* FOOTER */
+
+footer {
+  padding: 65px 20px;
+
+  text-align: center;
+
+  background: #334b3d;
+
+  color:
+    rgba(255, 255, 255, 0.75);
+}
+
+.footer-names {
+  margin: 0 0 12px;
+
+  color: white;
+
+  font-size: 2.4rem;
+}
+
+footer a {
+  display: inline-block;
+  margin-top: 18px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+  .menu-button {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+
+    top: 70px;
+    right: 18px;
+
+    display: none;
+
+    width:
+      min(
+        270px,
+        calc(100vw - 36px)
+      );
+
+    padding: 22px;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 16px;
+
+    background:
+      rgba(36, 56, 46, 0.97);
+
+    border-radius: 8px;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .schedule-shell::before {
+    display: none;
+  }
+
+  .weekend-schedule {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-day:nth-child(2) {
+    transform: none;
+  }
+
+  .story,
+  .rsvp {
+    grid-template-columns: 1fr;
+  }
+
+  .story-image {
+    min-height: 480px;
+  }
+
+  .rsvp-copy {
+    position: static;
+  }
+
+  .detail-grid,
+  .registry-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .search-results {
+    grid-template-columns: 1fr;
+  }
+
+  .address-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .household-result {
+    padding: 17px;
+  }
+
+  .household-result strong {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .nav {
+    height: 68px;
+  }
+
+  h1 {
+    font-size: 3.4rem;
+  }
+
+  .section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .story-image {
+    min-height: 390px;
+
+    border-radius:
+      160px 160px 8px 8px;
+  }
+
+  .schedule-flourish {
+    gap: 8px;
+  }
+
+  .ring-band {
+    width: 48px;
+  }
+
+  .schedule-day::after {
+    width: 76px;
+    height: 76px;
+    border-width: 14px;
+  }
+
+  .registry-card img {
+    height: 240px;
+  }
+
+  .photo-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+
+    grid-auto-rows: 170px;
+
+    gap: 9px;
+  }
+
+  .photo-tile {
+    grid-column:
+      span 1 !important;
+
+    grid-row:
+      span 2 !important;
+  }
+
+  .photo-4,
+  .photo-9 {
+    grid-column:
+      span 2 !important;
+
+    grid-row:
+      span 2 !important;
+  }
+}
+
+.registry-image-wrap {
+  position: relative;
+}
+
+.registry-progress-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 253, 251, 0.94);
+  color: var(--green);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.registry-price {
+  margin: 15px 0 12px;
+  color: var(--green);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.65rem;
+  font-weight: 600;
+}
+
+.registry-contribution {
+  margin: 15px 0 18px;
+}
+
+.registry-contribution-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 8px;
+  color: #66736a;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.registry-progress {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eee7e5;
+}
+
+.registry-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--soft-rose), var(--rose));
+}
+
+.registry-quantity {
+  margin: 12px 0 18px;
+  color: #66736a;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.registry-item-link {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--deep-rose);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.registry-item-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+
+.registry-complete {
+  max-width: 650px;
+  margin: 0 auto 20px;
+  padding: 34px;
+
+  border: 1px solid var(--line);
+  border-radius: 16px;
+
+  background: var(--paper);
+
+  text-align: center;
+}
+
+.registry-complete h3 {
+  margin: 0 0 8px;
+
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2rem;
+  font-weight: 600;
+
+  color: var(--green);
+}
+
+.registry-complete p {
+  margin: 0;
+
+  color: #657067;
+  line-height: 1.6;
+}
