@@ -1,19 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
 
-type RegistryItem = {
-  id: string;
-  name: string;
-  category: string;
-  note: string;
-  image: string;
-  link: string;
-  price: number;
-  quantityWanted: number;
-  quantityPurchased: number;
-  contributed: number;
-  groupGift: boolean;
-};
-
 type ScheduleEvent = {
   time: string;
   title: string;
@@ -25,74 +11,6 @@ type ScheduleDay = {
   date: string;
   events: ScheduleEvent[];
 };
-
-const registryItems: RegistryItem[] = [
-  {
-    id: "stand-mixer",
-    name: "Stand Mixer",
-    category: "Kitchen",
-    note: "For Sunday baking and way too many cookies.",
-    image: "https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?auto=format&fit=crop&w=900&q=80",
-    link: "https://www.amazon.com/wedding",
-    price: 449.99,
-    quantityWanted: 1,
-    quantityPurchased: 0,
-    contributed: 175,
-    groupGift: true
-  },
-  {
-    id: "sheet-set",
-    name: "Cozy Sheet Set",
-    category: "Home",
-    note: "A fresh start for our first home together.",
-    image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=900&q=80",
-    link: "https://www.amazon.com/wedding",
-    price: 129.99,
-    quantityWanted: 1,
-    quantityPurchased: 0,
-    contributed: 0,
-    groupGift: false
-  },
-  {
-    id: "weekend-luggage",
-    name: "Weekend Luggage",
-    category: "Travel",
-    note: "For the honeymoon and every trip after.",
-    image: "https://images.unsplash.com/photo-1553531384-cc64ac80f931?auto=format&fit=crop&w=900&q=80",
-    link: "https://www.amazon.com/wedding",
-    price: 189.99,
-    quantityWanted: 1,
-    quantityPurchased: 0,
-    contributed: 70,
-    groupGift: true
-  },
-  {
-    id: "dutch-oven",
-    name: "Dutch Oven",
-    category: "Kitchen",
-    note: "For soups, bread, and cold Montana evenings.",
-    image: "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=900&q=80",
-    link: "https://www.amazon.com/wedding",
-    price: 219.99,
-    quantityWanted: 1,
-    quantityPurchased: 0,
-    contributed: 0,
-    groupGift: false
-  },
-  {
-    id: "coffee-maker",
-    name: "Coffee Maker",
-    category: "Kitchen",
-    note: "A very important investment in our mornings together.",
-    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80",
-    link: "https://www.amazon.com/wedding",
-    price: 159.99,
-    quantityWanted: 1,
-    quantityPurchased: 1,
-    contributed: 0,
-    groupGift: false
-  }
-];
 
 const scheduleDays: ScheduleDay[] = [
   {
@@ -162,7 +80,7 @@ const scheduleDays: ScheduleDay[] = [
 
   {
     day: "Day Three",
-    date: "Sunday · June 6, 2027 · Alex and Jordan Absent",
+    date: "Sunday · June 6, 2027 · Jordan and Alexandra Absent",
     events: [
       {
         time: "8:00 AM",
@@ -181,16 +99,16 @@ const scheduleDays: ScheduleDay[] = [
 ];
 
 const galleryPhotos = [
-  { src: "/photos/bridge-kiss.jpg", alt: "Alexandra and Jordan kissing on a wooden bridge" },
+  { src: "/photos/bridge-kiss.jpg", alt: "Jordan and Alexandra kissing on a wooden bridge" },
   { src: "/photos/champagne-pour.jpg", alt: "Alexandra pouring champagne beside the lake" },
   { src: "/photos/champagne-toast.jpg", alt: "Champagne glasses raised in front of the mountains" },
-  { src: "/photos/bridge-embrace.jpg", alt: "Alexandra and Jordan embracing on a mountain bridge" },
+  { src: "/photos/bridge-embrace.jpg", alt: "Jordan and Alexandra embracing on a mountain bridge" },
   { src: "/photos/proposal.jpg", alt: "Proposal beside a mountain lake" },
   { src: "/photos/lakeside-lift.jpg", alt: "Jordan lifting Alexandra beside the lake" },
   { src: "/photos/lakeside-dip.jpg", alt: "A romantic dip beside the lake" },
   { src: "/photos/ring-hands.jpg", alt: "Alexandra's engagement ring with the lake in the background" },
-  { src: "/photos/lakeside-spin.jpg", alt: "Alexandra and Jordan spinning together by the lake" },
-  { src: "/photos/lake-embrace.jpg", alt: "Alexandra and Jordan embracing with the mountain lake behind them" }
+  { src: "/photos/lakeside-spin.jpg", alt: "Jordan and Alexandra spinning together by the lake" },
+  { src: "/photos/lake-embrace.jpg", alt: "Jordan and Alexandra embracing with the mountain lake behind them" }
 ];
 
 type GuestMember = {
@@ -376,44 +294,11 @@ function App() {
     setZip("");
   };
 
-  const isRegistryItemComplete = (item: RegistryItem) => {
-    const quantityComplete =
-      item.quantityWanted > 0 &&
-      item.quantityPurchased >= item.quantityWanted;
-
-    const contributionComplete =
-      item.groupGift &&
-      item.price > 0 &&
-      item.contributed >= item.price;
-
-    return quantityComplete || contributionComplete;
-  };
-
-  const featuredRegistryItems = registryItems
-    .filter((item) => !isRegistryItemComplete(item))
-    .slice(0, 3);
-
-  const formatMoney = (amount: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD"
-    }).format(amount);
-
-  const contributionPercent = (item: RegistryItem) => {
-    if (!item.groupGift || item.price <= 0) return 0;
-
-    return Math.min(
-      100,
-      Math.round((item.contributed / item.price) * 100)
-    );
-  };
-
-  const closeMenu = () => setMenuOpen(false);
 
   return (
     <main>
       <nav className="nav">
-        <a className="monogram" href="#home" onClick={closeMenu}>A + J</a>
+        <a className="monogram" href="#home" onClick={closeMenu}>J + A</a>
         <button
           className="menu-button"
           aria-label="Toggle navigation"
@@ -435,7 +320,7 @@ function App() {
         <div className="hero-overlay" />
         <div className="hero-content">
           <p className="eyebrow">We’re getting married!</p>
-          <h1>Alexandra <span>&</span> Jordan</h1>
+          <h1>Jordan <span>&</span> Alexandra</h1>
           <div className="three-stone" aria-hidden="true">
             <span className="pear pear-left" />
             <span className="oval-stone" />
@@ -458,7 +343,7 @@ function App() {
       </section>
 
       <section className="story section" id="story">
-        <div className="story-image" role="img" aria-label="Alexandra and Jordan together outdoors" />
+        <div className="story-image" role="img" aria-label="Jordan and Alexandra together outdoors" />
         <div className="story-copy">
           <p className="eyebrow">Our story</p>
           <h2>From our first hello to forever.</h2>
@@ -590,105 +475,29 @@ function App() {
           <p className="eyebrow">With love</p>
           <h2>Registry</h2>
           <p className="lead narrow">
-            Your presence is the greatest gift. For anyone who would like to
-            help us begin married life, here are a few things we are still
-            looking forward to.
+            Your presence at our wedding is the greatest gift. If you would
+            like to help us begin married life together, we have created an
+            Amazon wedding registry.
           </p>
         </div>
 
-        <div className="registry-grid">
-          {featuredRegistryItems.map((item) => {
-            const percent = contributionPercent(item);
-
-            return (
-              <article className="registry-card" key={item.id}>
-                <div className="registry-image-wrap">
-                  <img src={item.image} alt={item.name} />
-
-                  {item.groupGift && item.contributed > 0 && (
-                    <span className="registry-progress-badge">
-                      {percent}% funded
-                    </span>
-                  )}
-                </div>
-
-                <div className="registry-card-body">
-                  <span className="registry-category">{item.category}</span>
-
-                  <h3>{item.name}</h3>
-
-                  <p className="registry-note">{item.note}</p>
-
-                  <p className="registry-price">
-                    {formatMoney(item.price)}
-                  </p>
-
-                  {item.groupGift ? (
-                    <div className="registry-contribution">
-                      <div className="registry-contribution-top">
-                        <span>
-                          {formatMoney(item.contributed)} contributed
-                        </span>
-
-                        <span>
-                          of {formatMoney(item.price)}
-                        </span>
-                      </div>
-
-                      <div
-                        className="registry-progress"
-                        aria-label={`${percent}% funded`}
-                      >
-                        <div
-                          className="registry-progress-fill"
-                          style={{ width: `${percent}%` }}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="registry-quantity">
-                      {Math.max(
-                        0,
-                        item.quantityWanted - item.quantityPurchased
-                      )}{" "}
-                      still needed
-                    </p>
-                  )}
-
-                  <a
-                    className="registry-item-link"
-                    href={item.link}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {item.groupGift
-                      ? "View or contribute →"
-                      : "View on Amazon →"}
-                  </a>
-                </div>
-              </article>
-            );
-          })}
+        <div className="registry-feature">
+          <div className="registry-feature-mark" aria-hidden="true">A</div>
+          <p className="registry-feature-label">Our Amazon Wedding Registry</p>
+          <h3>A few things for our home and life together</h3>
+          <p>
+            Browse our full registry on Amazon for the most current gift list,
+            quantities, and availability.
+          </p>
+          <a
+            className="primary-button registry-main-button"
+            href="https://www.amazon.com/wedding/guest-view/1A5HNETHKG9HF"
+            target="_blank"
+            rel="noreferrer"
+          >
+            View Our Amazon Registry →
+          </a>
         </div>
-
-        {featuredRegistryItems.length === 0 && (
-          <div className="registry-complete">
-            <h3>We are incredibly grateful.</h3>
-            <p>
-              Everything currently featured on our registry has been purchased
-              or fully contributed toward.
-            </p>
-          </div>
-        )}
-
-        <a
-          className="secondary-button"
-          href="https://www.amazon.com/wedding"
-          target="_blank"
-          rel="noreferrer"
-        >
-          View full Amazon registry
-        </a>
       </section>
 
 <section className="rsvp section" id="rsvp">
@@ -1043,7 +852,7 @@ function App() {
       </section>
 
       <footer>
-        <p className="footer-names">Alexandra & Jordan</p>
+        <p className="footer-names">Jordan & Alexandra</p>
         <p>June 5, 2027 · Gallatin River Hideaway, Creekside</p>
         <a href="#home">Back to top ↑</a>
       </footer>
