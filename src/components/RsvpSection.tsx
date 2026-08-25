@@ -1,6 +1,75 @@
 import { FormEvent, useMemo, useState } from "react";
 import { GOOGLE_SCRIPT_URL } from "../data/wedding";
-import type { AdditionalGuest, HouseholdResult } from "../types/rsvp";
+import type { AdditionalGuest, HouseholdResult, MailingAddress } from "../types/rsvp";
+
+const emptyAddress = (): MailingAddress => ({ street: "", line2: "", city: "", state: "", zip: "" });
+const hasCompleteAddress = (address: MailingAddress) =>
+  Boolean(address.street.trim() && address.city.trim() && address.state.trim() && address.zip.trim());
+
+function AddressFields({
+  address,
+  onChange,
+  prefix,
+}: {
+  address: MailingAddress;
+  onChange: (address: MailingAddress) => void;
+  prefix: string;
+}) {
+  const set = (field: keyof MailingAddress, value: string) =>
+    onChange({ ...address, [field]: field === "state" ? value.toUpperCase().slice(0, 2) : value });
+
+  return (
+    <div className="person-address-fields">
+      <label>
+        Street address
+        <input
+          value={address.street}
+          onChange={e => set("street", e.target.value)}
+          required
+          autoComplete={`${prefix} street-address`}
+          placeholder="123 Main Street"
+        />
+      </label>
+      <label>
+        Apartment, unit, etc.
+        <input
+          value={address.line2}
+          onChange={e => set("line2", e.target.value)}
+          autoComplete={`${prefix} address-line2`}
+          placeholder="Optional"
+        />
+      </label>
+      <div className="address-grid">
+        <label>
+          City
+          <input value={address.city} onChange={e => set("city", e.target.value)} required autoComplete={`${prefix} address-level2`} />
+        </label>
+        <label>
+          State
+          <input
+            value={address.state}
+            onChange={e => set("state", e.target.value)}
+            required
+            maxLength={2}
+            placeholder="MT"
+            autoComplete={`${prefix} address-level1`}
+          />
+        </label>
+        <label>
+          ZIP
+          <input
+            value={address.zip}
+            onChange={e => set("zip", e.target.value)}
+            required
+            inputMode="numeric"
+            autoComplete={`${prefix} postal-code`}
+            placeholder="59715"
+          />
+        </label>
+      </div>
+    </div>
+  );
+}
 
 export function RsvpSection() {
   const [searchName, setSearchName] = useState("");
@@ -9,13 +78,11 @@ export function RsvpSection() {
   const [selectedHousehold, setSelectedHousehold] = useState<HouseholdResult | null>(null);
   const [attendingGuestIds, setAttendingGuestIds] = useState<string[]>([]);
   const [additionalGuests, setAdditionalGuests] = useState<AdditionalGuest[]>([]);
+  const [sharedAddress, setSharedAddress] = useState<MailingAddress>(emptyAddress());
+  const [individualAddresses, setIndividualAddresses] = useState<Record<string, MailingAddress>>({});
+  const [additionalGuestAddresses, setAdditionalGuestAddresses] = useState<Record<number, MailingAddress>>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [street, setStreet] = useState("");
-  const [line2, setLine2] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zip, setZip] = useState("");
 
   const openGuestSeats = useMemo(() => {
     if (!selectedHousehold) return 0;
@@ -23,6 +90,7 @@ export function RsvpSection() {
   }, [selectedHousehold]);
 
   const attendingCount = attendingGuestIds.length + additionalGuests.length;
+  const useIndividualAddresses = selectedHousehold?.addressCollectionMode === "Individual";
 
   const searchGuests = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -55,11 +123,11 @@ export function RsvpSection() {
       household.members.filter(member => member.rsvpStatus === "Accepted").map(member => member.guestId),
     );
     setAdditionalGuests([]);
-    setStreet(household.address?.street || "");
-    setLine2(household.address?.line2 || "");
-    setCity(household.address?.city || "");
-    setState(household.address?.state || "");
-    setZip(household.address?.zip || "");
+    setSharedAddress(household.address || emptyAddress());
+    setIndividualAddresses(
+      Object.fromEntries(household.members.map(member => [member.guestId, member.address || emptyAddress()])),
+    );
+    setAdditionalGuestAddresses({});
     setSearchResults([]);
   };
 
@@ -80,6 +148,15 @@ export function RsvpSection() {
 
   const removeAdditionalGuest = (index: number) => {
     setAdditionalGuests(current => current.filter((_, i) => i !== index));
+    setAdditionalGuestAddresses(current => {
+      const next: Record<number, MailingAddress> = {};
+      Object.entries(current).forEach(([key, value]) => {
+        const oldIndex = Number(key);
+        if (oldIndex < index) next[oldIndex] = value;
+        if (oldIndex > index) next[oldIndex - 1] = value;
+      });
+      return next;
+    });
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -95,6 +172,20 @@ export function RsvpSection() {
       return;
     }
 
+    if (attendingCount > 0) {
+      if (useIndividualAddresses) {
+        const missingNamed = attendingGuestIds.some(id => !hasCompleteAddress(individualAddresses[id] || emptyAddress()));
+        const missingAdded = cleanedAdditionalGuests.some((_, index) => !hasCompleteAddress(additionalGuestAddresses[index] || emptyAddress()));
+        if (missingNamed || missingAdded) {
+          alert("Please enter a complete mailing address for each person who is attending.");
+          return;
+        }
+      } else if (!hasCompleteAddress(sharedAddress)) {
+        alert("Please enter the mailing address for your invitation.");
+        return;
+      }
+    }
+
     const formData = new FormData(event.currentTarget);
     const data = {
       household: selectedHousehold.household,
@@ -102,11 +193,18 @@ export function RsvpSection() {
       reservedSeats: selectedHousehold.reservedSeats,
       attendingGuestIds,
       additionalGuests: cleanedAdditionalGuests,
-      numberAttending: attendingGuestIds.length + cleanedAdditionalGuests.length,
+      numberAttending: attendingCount,
       dietary: formData.get("dietary"),
       song: formData.get("song"),
       message: formData.get("message"),
-      address: { street, line2, city, state, zip },
+      addressCollectionMode: selectedHousehold.addressCollectionMode,
+      address: useIndividualAddresses ? emptyAddress() : sharedAddress,
+      individualAddresses: useIndividualAddresses
+        ? attendingGuestIds.map(guestId => ({ guestId, address: individualAddresses[guestId] || emptyAddress() }))
+        : [],
+      additionalGuestAddresses: useIndividualAddresses
+        ? cleanedAdditionalGuests.map((guest, index) => ({ name: guest.name, address: additionalGuestAddresses[index] || emptyAddress() }))
+        : [],
     };
 
     setSubmitting(true);
@@ -130,11 +228,9 @@ export function RsvpSection() {
     setSelectedHousehold(null);
     setAttendingGuestIds([]);
     setAdditionalGuests([]);
-    setStreet("");
-    setLine2("");
-    setCity("");
-    setState("");
-    setZip("");
+    setSharedAddress(emptyAddress());
+    setIndividualAddresses({});
+    setAdditionalGuestAddresses({});
   };
 
   return (
@@ -272,26 +368,49 @@ export function RsvpSection() {
             </div>
           )}
 
-          <div className="address-section">
-            <div className="address-heading">
-              <p className="eyebrow">Mailing address</p>
-              <h3>Where should we send wedding mail?</h3>
-              <p className="small-note">Please confirm the best address for invitations and thank-you cards.</p>
+          {attendingCount > 0 && (
+            <div className="address-section">
+              <div className="address-heading">
+                <p className="eyebrow">Mailing address{useIndividualAddresses ? "es" : ""}</p>
+                <h3>{useIndividualAddresses ? "Where should we send mail for each guest?" : "Where should we send wedding mail?"}</h3>
+                <p className="small-note">
+                  {useIndividualAddresses
+                    ? "Because this invitation includes family members or guests with different last names, please confirm an address for each person attending."
+                    : "Please confirm the best shared address for invitations and thank-you cards."}
+                </p>
+              </div>
+
+              {useIndividualAddresses ? (
+                <div className="individual-address-list">
+                  {selectedHousehold.members
+                    .filter(member => attendingGuestIds.includes(member.guestId))
+                    .map(member => (
+                      <div className="individual-address-card" key={`address-${member.guestId}`}>
+                        <h4>{member.displayName}</h4>
+                        <AddressFields
+                          address={individualAddresses[member.guestId] || emptyAddress()}
+                          onChange={address => setIndividualAddresses(current => ({ ...current, [member.guestId]: address }))}
+                          prefix={member.guestId}
+                        />
+                      </div>
+                    ))}
+
+                  {additionalGuests.map((guest, index) => (
+                    <div className="individual-address-card" key={`extra-address-${index}`}>
+                      <h4>{guest.name.trim() || `Guest ${index + 1}`}</h4>
+                      <AddressFields
+                        address={additionalGuestAddresses[index] || emptyAddress()}
+                        onChange={address => setAdditionalGuestAddresses(current => ({ ...current, [index]: address }))}
+                        prefix={`additional-${index}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <AddressFields address={sharedAddress} onChange={setSharedAddress} prefix="shared" />
+              )}
             </div>
-            <label>
-              Street address
-              <input value={street} onChange={e => setStreet(e.target.value)} required autoComplete="street-address" placeholder="123 Main Street" />
-            </label>
-            <label>
-              Apartment, unit, etc.
-              <input value={line2} onChange={e => setLine2(e.target.value)} autoComplete="address-line2" placeholder="Optional" />
-            </label>
-            <div className="address-grid">
-              <label>City<input value={city} onChange={e => setCity(e.target.value)} required autoComplete="address-level2" /></label>
-              <label>State<input value={state} onChange={e => setState(e.target.value.toUpperCase().slice(0, 2))} required maxLength={2} placeholder="MT" autoComplete="address-level1" /></label>
-              <label>ZIP<input value={zip} onChange={e => setZip(e.target.value)} required inputMode="numeric" autoComplete="postal-code" placeholder="59715" /></label>
-            </div>
-          </div>
+          )}
 
           <label>Dietary restrictions<textarea name="dietary" placeholder="Allergies or dietary needs for anyone attending" rows={3} /></label>
           <label>Song request<input name="song" placeholder="What gets you on the dance floor?" /></label>

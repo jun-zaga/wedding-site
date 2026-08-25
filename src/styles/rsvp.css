@@ -582,3 +582,26 @@ legend {
     justify-self: start;
   }
 }
+
+.individual-address-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.individual-address-card {
+  border: 1px solid rgba(88, 100, 70, 0.2);
+  border-radius: 18px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.individual-address-card h4 {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+}
+
+.person-address-fields {
+  display: grid;
+  gap: 0.8rem;
+}

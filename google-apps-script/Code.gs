@@ -80,6 +80,9 @@ function doPost(e) {
     if (householdRows.length === 0) throw new Error('Invitation could not be matched to the guest list.');
 
     const address = payload.address || {};
+    const addressCollectionMode = String(payload.addressCollectionMode || 'Shared');
+    const individualAddresses = Array.isArray(payload.individualAddresses) ? payload.individualAddresses : [];
+    const additionalGuestAddresses = Array.isArray(payload.additionalGuestAddresses) ? payload.additionalGuestAddresses : [];
     const responseHeaders = ensureResponseHeaders(responsesSheet);
     const row = new Array(responseHeaders.length).fill('');
     const primaryDisplayName = getPrimaryDisplayName(guestValues, headers, primaryGuestId);
@@ -97,18 +100,33 @@ function doPost(e) {
     assignResponse(row, responseHeaders, 'City', address.city || '');
     assignResponse(row, responseHeaders, 'State', address.state || '');
     assignResponse(row, responseHeaders, 'ZIP', address.zip || '');
-    assignResponse(row, responseHeaders, 'Address Confirmed', 'Yes');
+    assignResponse(row, responseHeaders, 'Address Confirmed', numberAttending > 0 ? 'Yes' : 'Not needed');
     assignResponse(row, responseHeaders, 'Additional Guests', additionalGuests.join(', '));
     assignResponse(row, responseHeaders, 'Household', household);
+    assignResponse(row, responseHeaders, 'Individual Addresses', addressCollectionMode === 'Individual' ? JSON.stringify({ namedGuests: individualAddresses, additionalGuests: additionalGuestAddresses }) : '');
 
     responsesSheet.appendRow(row);
 
-    if (headers['address'] !== undefined && primaryGuestId) {
-      for (let i = 1; i < guestValues.length; i++) {
-        if (String(guestValues[i][headers['guest id']] || '') === primaryGuestId) {
-          const formatted = [address.street, address.line2, [address.city, address.state, address.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-          guestsSheet.getRange(i + 1, headers['address'] + 1).setValue(formatted);
-          break;
+    if (headers['address'] !== undefined) {
+      if (addressCollectionMode === 'Individual') {
+        const byGuestId = {};
+        individualAddresses.forEach(entry => {
+          const guestId = String((entry && entry.guestId) || '');
+          if (guestId) byGuestId[guestId] = (entry && entry.address) || {};
+        });
+        for (let i = 1; i < guestValues.length; i++) {
+          const guestId = String(guestValues[i][headers['guest id']] || '');
+          if (!attendingIds.has(guestId) || !byGuestId[guestId]) continue;
+          guestsSheet.getRange(i + 1, headers['address'] + 1).setValue(formatAddress(byGuestId[guestId]));
+        }
+      } else if (primaryGuestId && numberAttending > 0) {
+        for (let i = 1; i < guestValues.length; i++) {
+          const guestId = String(guestValues[i][headers['guest id']] || '');
+          const rowHousehold = String(guestValues[i][headers['household / invitation group']] || '');
+          const belongs = household ? rowHousehold === household : guestId === primaryGuestId;
+          if (belongs && attendingIds.has(guestId)) {
+            guestsSheet.getRange(i + 1, headers['address'] + 1).setValue(formatAddress(address));
+          }
         }
       }
     }
@@ -131,6 +149,7 @@ function guestFromRow(row, sheetRow, headers) {
     household: String(row[headers['household / invitation group']] || '').trim(),
     reservedSeats: Number(row[headers['reserved seats']] || 0),
     rsvpStatus: String(row[headers['rsvp status']] || 'Pending'),
+    invitationType: String(row[headers['invitation type']] || '').trim(),
     address: String(row[headers['address']] || '').trim()
   };
 }
@@ -147,11 +166,23 @@ function buildHouseholdResult(key, guests) {
   const reservedSeats = Math.max(members.length, members.reduce((sum, g) => sum + (g.reservedSeats || 0), 0));
   const householdName = primary.household || primary.displayName;
 
+  const lastNames = [...new Set(members.map(g => normalize(g.lastName)).filter(Boolean))];
+  const isFamily = members.some(g => normalize(g.invitationType) === 'family');
+  const addressCollectionMode = isFamily || lastNames.length > 1 ? 'Individual' : 'Shared';
+
   return {
     household: householdName,
     primaryGuestId: primary.guestId,
     reservedSeats: reservedSeats,
-    members: members.map(g => ({ guestId: g.guestId, displayName: g.displayName, rsvpStatus: g.rsvpStatus })),
+    addressCollectionMode: addressCollectionMode,
+    members: members.map(g => ({
+      guestId: g.guestId,
+      displayName: g.displayName,
+      firstName: g.firstName,
+      lastName: g.lastName,
+      rsvpStatus: g.rsvpStatus,
+      address: parseAddress(g.address)
+    })),
     address: parseAddress(primary.address)
   };
 }
@@ -187,13 +218,20 @@ function ensureResponseHeaders(sheet) {
   const desired = [
     'Timestamp', 'Guest ID', 'Display Name', 'Attending?', 'Number Attending',
     'Dietary Restrictions', 'Song Request', 'Message / Notes', 'Street Address',
-    'Address Line 2', 'City', 'State', 'ZIP', 'Address Confirmed', 'Additional Guests', 'Household'
+    'Address Line 2', 'City', 'State', 'ZIP', 'Address Confirmed', 'Additional Guests', 'Household', 'Individual Addresses'
   ];
   const current = sheet.getLastColumn() ? sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), desired.length)).getValues()[0] : [];
   desired.forEach((header, index) => {
     if (!current[index]) sheet.getRange(1, index + 1).setValue(header);
   });
   return sheet.getRange(1, 1, 1, desired.length).getValues()[0];
+}
+
+function formatAddress(address) {
+  address = address || {};
+  return [address.street, address.line2, [address.city, address.state, address.zip].filter(Boolean).join(' ')]
+    .filter(Boolean)
+    .join(', ');
 }
 
 function assignResponse(row, headers, header, value) {
