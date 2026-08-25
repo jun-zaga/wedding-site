@@ -7,7 +7,7 @@ export function Navbar() {
     <button className="menu-button" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(open => !open)}>☰</button>
     <div className={`nav-links ${menuOpen ? "open" : ""}`}>
       <a href="#story" onClick={closeMenu}>Our Story</a><a href="#details" onClick={closeMenu}>Details</a>
-      <a href="#gallery" onClick={closeMenu}>Gallery</a><a href="#registry" onClick={closeMenu}>Registry</a>
+      <a href="#venue" onClick={closeMenu}>Venue</a><a href="#gallery" onClick={closeMenu}>Gallery</a><a href="#registry" onClick={closeMenu}>Registry</a>
       <a className="nav-rsvp" href="#rsvp" onClick={closeMenu}>RSVP</a>
     </div>
   </nav>;

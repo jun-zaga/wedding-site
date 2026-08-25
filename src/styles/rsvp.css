@@ -485,3 +485,100 @@ legend {
   cursor: wait;
 }
 
+
+/* RSVP SEAT-BASED GUESTS */
+
+.seat-allowance {
+  margin: 4px 0 12px;
+  color: #66736a;
+  font-size: 0.95rem;
+}
+
+.additional-guest-section {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid rgba(198, 111, 134, 0.22);
+  border-radius: 16px;
+  background: #fff9fa;
+}
+
+.additional-guest-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 22px;
+  align-items: flex-start;
+}
+
+.additional-guest-heading h3 {
+  margin: 2px 0 8px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.75rem;
+}
+
+.add-guest-button,
+.remove-guest-button {
+  border: 1px solid rgba(75, 105, 87, 0.28);
+  background: var(--paper);
+  color: var(--green);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.add-guest-button {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  border-radius: 999px;
+}
+
+.additional-guest-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.remove-guest-button {
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid rgba(75, 105, 87, 0.35);
+  background: transparent;
+  font-size: 0.78rem;
+}
+
+.rsvp-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: rgba(75, 105, 87, 0.07);
+  color: var(--green);
+}
+
+.rsvp-summary span {
+  color: #69756d;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 560px) {
+  .additional-guest-heading,
+  .rsvp-summary {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .add-guest-button {
+    align-self: flex-start;
+  }
+
+  .additional-guest-row {
+    grid-template-columns: 1fr;
+  }
+
+  .remove-guest-button {
+    justify-self: start;
+  }
+}

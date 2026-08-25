@@ -2,6 +2,7 @@ import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { DetailsSection, FaqSection, Footer, GallerySection, IntroSection, RegistrySection, ScheduleSection, StorySection } from "./components/Sections";
 import { RsvpSection } from "./components/RsvpSection";
+import { VenueSection } from "./components/VenueSection";
 import { WEDDING_DATE } from "./data/wedding";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
     <StorySection />
     <DetailsSection />
     <ScheduleSection />
+    <VenueSection />
     <GallerySection />
     <RegistrySection />
     <RsvpSection />

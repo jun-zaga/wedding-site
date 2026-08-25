@@ -1,4 +1,5 @@
 export type GuestMember = { guestId: string; displayName: string; rsvpStatus: string };
+export type AdditionalGuest = { name: string };
 export type HouseholdResult = {
   household: string;
   primaryGuestId: string;
