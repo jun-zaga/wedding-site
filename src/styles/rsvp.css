@@ -605,3 +605,13 @@ legend {
   display: grid;
   gap: 0.8rem;
 }
+
+.rsvp-form .guest-checkbox { display: flex; }
+@media (max-width: 900px) {
+  .rsvp { grid-template-columns: 1fr; }
+  .rsvp-copy { position: static; }
+  .address-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 680px) {
+  .search-results { grid-template-columns: 1fr; }
+}

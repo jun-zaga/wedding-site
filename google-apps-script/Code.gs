@@ -22,7 +22,7 @@ function doGet(e) {
     const matched = guests.filter(g =>
       normalize(g.displayName).includes(query) ||
       normalize(g.firstName).includes(query) ||
-      normalize(g.lastName).includes(query) ||
+      normalize(g.lastName || g.displayName.split(/\s+/).slice(1).join(' ')).includes(query) ||
       normalize(g.household).includes(query)
     );
 
@@ -45,44 +45,49 @@ function doPost(e) {
 
     const guestValues = guestsSheet.getDataRange().getValues();
     const headers = headerMap(guestValues[0]);
-    const attendingIds = new Set((payload.attendingGuestIds || []).map(String));
-    const additionalGuests = (payload.additionalGuests || [])
-      .map(g => String((g && g.name) || '').trim())
-      .filter(Boolean);
-
-    const primaryGuestId = String(payload.primaryGuestId || '');
-    const household = String(payload.household || '');
-    const reservedSeats = Number(payload.reservedSeats || 0);
+    const guests = guestValues.slice(1).map((row, index) => guestFromRow(row, index + 2, headers)).filter(Boolean);
+    const primary = guests.find(g => g.guestId === String(payload.primaryGuestId || ''));
+    if (!primary) throw new Error('Invitation could not be matched to the guest list.');
+    const invitation = buildHouseholdResult(householdKey(primary), guests);
+    const members = guests.filter(g => householdKey(g) === householdKey(primary));
+    const primaryGuestId = invitation.primaryGuestId;
+    const household = invitation.household;
+    if (!Array.isArray(payload.attendingGuestIds)) throw new Error('Invalid attending guest list.');
+    const attendingIds = new Set(payload.attendingGuestIds.map(String));
+    if ([...attendingIds].some(id => !members.some(g => g.guestId === id))) {
+      throw new Error('An attending guest does not belong to this invitation.');
+    }
+    const extras = payload.additionalGuests || [];
+    if (!Array.isArray(extras)) throw new Error('Invalid additional guest list.');
+    const additionalGuests = extras.map(g => String((g && g.name) || '').trim());
+    if (additionalGuests.some(name => !name)) throw new Error('Please name each additional guest.');
     const numberAttending = attendingIds.size + additionalGuests.length;
-
-    if (reservedSeats && numberAttending > reservedSeats) {
-      throw new Error('This RSVP exceeds the number of seats reserved for the invitation.');
+    if (numberAttending > invitation.reservedSeats || additionalGuests.length > invitation.reservedSeats - members.length) {
+      throw new Error('This RSVP exceeds the seats reserved for the invitation.');
     }
-
-    const householdRows = [];
-    for (let i = 1; i < guestValues.length; i++) {
-      const row = guestValues[i];
-      const guestId = String(row[headers['guest id']] || '');
-      const rowHousehold = String(row[headers['household / invitation group']] || '');
-      const belongs = household
-        ? rowHousehold === household
-        : guestId === primaryGuestId;
-
-      if (!belongs) continue;
-      householdRows.push(i + 1);
-
-      const isAttending = attendingIds.has(guestId);
-      setByHeader(guestsSheet, i + 1, headers, 'rsvp status', isAttending ? 'Accepted' : 'Declined');
-      setByHeader(guestsSheet, i + 1, headers, 'attending?', isAttending ? 'Yes' : 'No');
-      setByHeader(guestsSheet, i + 1, headers, 'number attending', guestId === primaryGuestId ? numberAttending : '');
-    }
-
-    if (householdRows.length === 0) throw new Error('Invitation could not be matched to the guest list.');
-
     const address = payload.address || {};
-    const addressCollectionMode = String(payload.addressCollectionMode || 'Shared');
+    const addressCollectionMode = invitation.addressCollectionMode === 'Individual' || additionalGuests.length > 0 || payload.addressCollectionMode === 'Individual' ? 'Individual' : 'Shared';
     const individualAddresses = Array.isArray(payload.individualAddresses) ? payload.individualAddresses : [];
     const additionalGuestAddresses = Array.isArray(payload.additionalGuestAddresses) ? payload.additionalGuestAddresses : [];
+    if (numberAttending > 0) {
+      if (addressCollectionMode === 'Individual') {
+        if (individualAddresses.length !== attendingIds.size || individualAddresses.some(entry => !entry || !attendingIds.has(String(entry.guestId))) ||
+            [...attendingIds].some(id => individualAddresses.filter(entry => String(entry.guestId) === id && hasCompleteAddress(entry.address)).length !== 1) ||
+            additionalGuestAddresses.length !== additionalGuests.length || additionalGuests.some((name, index) => !additionalGuestAddresses[index] || additionalGuestAddresses[index].name !== name || !hasCompleteAddress(additionalGuestAddresses[index].address))) {
+          throw new Error('Please provide a complete mailing address for each attending guest.');
+        }
+      } else if (!hasCompleteAddress(address)) {
+        throw new Error('Please provide a complete mailing address.');
+      }
+    }
+    // Validate the entire invitation before making any sheet changes.
+    members.forEach(guest => {
+      const isAttending = attendingIds.has(guest.guestId);
+      setByHeader(guestsSheet, guest.sheetRow, headers, 'rsvp status', isAttending ? 'Accepted' : 'Declined');
+      setByHeader(guestsSheet, guest.sheetRow, headers, 'attending?', isAttending ? 'Yes' : 'No');
+      setByHeader(guestsSheet, guest.sheetRow, headers, 'number attending', guest.guestId === primaryGuestId ? numberAttending : '');
+    });
+
     const responseHeaders = ensureResponseHeaders(responsesSheet);
     const row = new Array(responseHeaders.length).fill('');
     const primaryDisplayName = getPrimaryDisplayName(guestValues, headers, primaryGuestId);
@@ -107,28 +112,13 @@ function doPost(e) {
 
     responsesSheet.appendRow(row);
 
-    if (headers['address'] !== undefined) {
-      if (addressCollectionMode === 'Individual') {
-        const byGuestId = {};
-        individualAddresses.forEach(entry => {
-          const guestId = String((entry && entry.guestId) || '');
-          if (guestId) byGuestId[guestId] = (entry && entry.address) || {};
-        });
-        for (let i = 1; i < guestValues.length; i++) {
-          const guestId = String(guestValues[i][headers['guest id']] || '');
-          if (!attendingIds.has(guestId) || !byGuestId[guestId]) continue;
-          guestsSheet.getRange(i + 1, headers['address'] + 1).setValue(formatAddress(byGuestId[guestId]));
-        }
-      } else if (primaryGuestId && numberAttending > 0) {
-        for (let i = 1; i < guestValues.length; i++) {
-          const guestId = String(guestValues[i][headers['guest id']] || '');
-          const rowHousehold = String(guestValues[i][headers['household / invitation group']] || '');
-          const belongs = household ? rowHousehold === household : guestId === primaryGuestId;
-          if (belongs && attendingIds.has(guestId)) {
-            guestsSheet.getRange(i + 1, headers['address'] + 1).setValue(formatAddress(address));
-          }
-        }
-      }
+    if (headers['address'] !== undefined && numberAttending > 0) {
+      members.filter(g => attendingIds.has(g.guestId)).forEach(guest => {
+        const mailingAddress = addressCollectionMode === 'Individual'
+          ? individualAddresses.find(entry => String(entry.guestId) === guest.guestId).address : address;
+        // Preserve the individual fields so a returning guest can confirm them.
+        guestsSheet.getRange(guest.sheetRow, headers['address'] + 1).setValue(JSON.stringify(mailingAddress));
+      });
     }
 
     return jsonResponse({ success: true, numberAttending: numberAttending, additionalGuests: additionalGuests });
@@ -166,7 +156,7 @@ function buildHouseholdResult(key, guests) {
   const reservedSeats = Math.max(members.length, members.reduce((sum, g) => sum + (g.reservedSeats || 0), 0));
   const householdName = primary.household || primary.displayName;
 
-  const lastNames = [...new Set(members.map(g => normalize(g.lastName)).filter(Boolean))];
+  const lastNames = [...new Set(members.map(g => normalize(g.lastName || g.displayName.split(/\s+/).slice(1).join(' '))).filter(Boolean))];
   const isFamily = members.some(g => normalize(g.invitationType) === 'family');
   const addressCollectionMode = isFamily || lastNames.length > 1 ? 'Individual' : 'Shared';
 
@@ -189,6 +179,12 @@ function buildHouseholdResult(key, guests) {
 
 function parseAddress(value) {
   if (!value) return { street: '', line2: '', city: '', state: '', zip: '' };
+  try {
+    const parsed = JSON.parse(value);
+    if (parsed && typeof parsed === 'object' && typeof parsed.street === 'string') {
+      return { street: parsed.street, line2: parsed.line2 || '', city: parsed.city || '', state: parsed.state || '', zip: parsed.zip || '' };
+    }
+  } catch (_) { /* Existing free-text addresses remain available for correction. */ }
   return { street: value, line2: '', city: '', state: '', zip: '' };
 }
 
@@ -220,11 +216,14 @@ function ensureResponseHeaders(sheet) {
     'Dietary Restrictions', 'Song Request', 'Message / Notes', 'Street Address',
     'Address Line 2', 'City', 'State', 'ZIP', 'Address Confirmed', 'Additional Guests', 'Household', 'Individual Addresses'
   ];
-  const current = sheet.getLastColumn() ? sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), desired.length)).getValues()[0] : [];
-  desired.forEach((header, index) => {
-    if (!current[index]) sheet.getRange(1, index + 1).setValue(header);
+  const current = sheet.getLastColumn() ? sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0] : [];
+  desired.forEach(header => {
+    if (!current.some(existing => normalize(existing) === normalize(header))) {
+      current.push(header);
+      sheet.getRange(1, current.length).setValue(header);
+    }
   });
-  return sheet.getRange(1, 1, 1, desired.length).getValues()[0];
+  return current;
 }
 
 function formatAddress(address) {
@@ -245,4 +244,8 @@ function normalize(value) {
 
 function jsonResponse(payload) {
   return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function hasCompleteAddress(address) {
+  return address && ['street', 'city', 'state', 'zip'].every(key => typeof address[key] === 'string' && address[key].trim());
 }

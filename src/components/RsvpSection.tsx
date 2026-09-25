@@ -26,7 +26,7 @@ function AddressFields({
           value={address.street}
           onChange={e => set("street", e.target.value)}
           required
-          autoComplete={`${prefix} street-address`}
+          autoComplete={`section-${prefix} street-address`}
           placeholder="123 Main Street"
         />
       </label>
@@ -35,14 +35,14 @@ function AddressFields({
         <input
           value={address.line2}
           onChange={e => set("line2", e.target.value)}
-          autoComplete={`${prefix} address-line2`}
+          autoComplete={`section-${prefix} address-line2`}
           placeholder="Optional"
         />
       </label>
       <div className="address-grid">
         <label>
           City
-          <input value={address.city} onChange={e => set("city", e.target.value)} required autoComplete={`${prefix} address-level2`} />
+          <input value={address.city} onChange={e => set("city", e.target.value)} required autoComplete={`section-${prefix} address-level2`} />
         </label>
         <label>
           State
@@ -52,7 +52,7 @@ function AddressFields({
             required
             maxLength={2}
             placeholder="MT"
-            autoComplete={`${prefix} address-level1`}
+            autoComplete={`section-${prefix} address-level1`}
           />
         </label>
         <label>
@@ -62,7 +62,7 @@ function AddressFields({
             onChange={e => set("zip", e.target.value)}
             required
             inputMode="numeric"
-            autoComplete={`${prefix} postal-code`}
+            autoComplete={`section-${prefix} postal-code`}
             placeholder="59715"
           />
         </label>
@@ -90,7 +90,9 @@ export function RsvpSection() {
   }, [selectedHousehold]);
 
   const attendingCount = attendingGuestIds.length + additionalGuests.length;
-  const useIndividualAddresses = selectedHousehold?.addressCollectionMode === "Individual";
+  const useIndividualAddresses = selectedHousehold?.addressCollectionMode === "Individual" ||
+    new Set(selectedHousehold?.members.map(member => (member.lastName || member.displayName.trim().split(/\s+/).slice(1).join(" ")).trim().toLowerCase()).filter(Boolean)).size > 1 ||
+    additionalGuests.length > 0;
 
   const searchGuests = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -161,7 +163,7 @@ export function RsvpSection() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selectedHousehold) return;
+    if (!selectedHousehold || submitting) return;
 
     const cleanedAdditionalGuests = additionalGuests
       .map(guest => ({ name: guest.name.trim() }))
@@ -197,7 +199,7 @@ export function RsvpSection() {
       dietary: formData.get("dietary"),
       song: formData.get("song"),
       message: formData.get("message"),
-      addressCollectionMode: selectedHousehold.addressCollectionMode,
+      addressCollectionMode: useIndividualAddresses ? "Individual" : "Shared",
       address: useIndividualAddresses ? emptyAddress() : sharedAddress,
       individualAddresses: useIndividualAddresses
         ? attendingGuestIds.map(guestId => ({ guestId, address: individualAddresses[guestId] || emptyAddress() }))
@@ -248,7 +250,7 @@ export function RsvpSection() {
         <div className="confirmation">
           <span>✓</span>
           <h3>Thank you!</h3>
-          <p>Your RSVP has been received. We cannot wait to celebrate with you!</p>
+          <p>{attendingCount > 0 ? "Your RSVP has been received. We cannot wait to celebrate with you!" : "Your RSVP has been received. Thank you for letting us know—we will miss you!"}</p>
           <button onClick={resetRsvp}>Submit another RSVP</button>
         </div>
       ) : !selectedHousehold ? (
@@ -375,7 +377,7 @@ export function RsvpSection() {
                 <h3>{useIndividualAddresses ? "Where should we send mail for each guest?" : "Where should we send wedding mail?"}</h3>
                 <p className="small-note">
                   {useIndividualAddresses
-                    ? "Because this invitation includes family members or guests with different last names, please confirm an address for each person attending."
+                    ? "Please confirm a mailing address for each person attending, even when guests share an address."
                     : "Please confirm the best shared address for invitations and thank-you cards."}
                 </p>
               </div>

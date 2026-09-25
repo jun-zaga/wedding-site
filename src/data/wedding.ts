@@ -1,7 +1,7 @@
 export type ScheduleEvent = { time: string; title: string; detail?: string };
 export type ScheduleDay = { day: string; date: string; events: ScheduleEvent[] };
 
-export const WEDDING_DATE = new Date("2027-06-05T16:00:00");
+export const WEDDING_DATE = new Date("2027-06-05T15:00:00-06:00");
 export const AMAZON_REGISTRY_URL = "https://www.amazon.com/wedding/guest-view/1A5HNETHKG9HF";
 export const VENUE_ADDRESS = "135 Hideaway Drive, Bozeman, MT 59718";
 export const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/oxgefjNVxgvxe9MH9";
