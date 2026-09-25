@@ -143,9 +143,18 @@ h2 { margin:0 0 20px; font-size:clamp(2.7rem,6vw,5rem); line-height:1.05; }
 .detail-number { color:#efe1be; font-size:.8rem; letter-spacing:.15em; }
 
 .schedule { max-width:1180px; margin:auto; }
-.weekend-schedule { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.weekend-schedule {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:28px;
+  max-width:960px;
+  margin:0 auto;
+  align-items:start;
+}
 .schedule-day {
-  padding:34px 30px;
+  min-width:0;
+  border-radius:20px;
+  padding:34px clamp(20px,3vw,34px);
   background:linear-gradient(180deg,var(--paper),#fff7fa);
   border:1px solid rgba(198,111,134,.18);
   box-shadow:0 18px 48px rgba(49,89,67,.09);

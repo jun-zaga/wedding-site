@@ -93,10 +93,11 @@ function App() {
           <article className="detail-card">
             <span className="detail-number">02</span>
             <h3>Dress Code</h3>
-            <p>Semi-formal</p>
+            <p>Sunday Best</p>
             <p>
-              Cocktail dresses, jumpsuits, suits, button-down shirts,
-              and comfortable dancing shoes are all welcome.
+              Wear something neat and comfortable that you would wear to church
+              or a nice family gathering. Please avoid graphic tees, ripped jeans,
+              and overly casual attire.
             </p>
           </article>
 
