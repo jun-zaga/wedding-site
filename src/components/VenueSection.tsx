@@ -31,7 +31,7 @@ export function VenueSection() {
           <p>Bozeman, Montana 59718</p>
           <div className="venue-divider" />
           <p className="venue-note">
-            Use the map for the venue entrance. We will add final parking and arrival instructions here as the wedding gets closer.
+            Use the map for the venue entrance. Parking is immediately inside the entrance.
           </p>
           <a className="primary-button venue-directions" href={GOOGLE_MAPS_URL} target="_blank" rel="noreferrer">
             Open in Google Maps →

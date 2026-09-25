@@ -103,10 +103,9 @@ function App() {
           <article className="detail-card">
             <span className="detail-number">03</span>
             <h3>Travel</h3>
-            <p>Lodging information coming soon.</p>
+            <p>Please arrange your own travel and accommodations.</p>
             <p>
-              We will add accommodation ideas, directions, parking details,
-              and other helpful recommendations as plans are finalized.
+              Choose the transportation and lodging that work best for you.
             </p>
           </article>
         </div>
@@ -115,9 +114,9 @@ function App() {
       <section className="schedule section">
         <div className="section-heading">
           <p className="eyebrow">The weekend</p>
-          <h2>Three-day schedule</h2>
+          <h2>Weekend schedule</h2>
           <p className="lead narrow">
-            A weekend built around one beautiful day, with room to gather before and after.
+            A weekend built around one beautiful day, with time to gather the day before.
           </p>
         </div>
 
@@ -208,7 +207,7 @@ function App() {
           </details>
           <details>
             <summary>Is there parking?</summary>
-            <p>Parking and arrival details will be added as plans are finalized.</p>
+            <p>Parking is immediately inside the venue entrance.</p>
           </details>
           <details>
             <summary>When should I arrive?</summary>

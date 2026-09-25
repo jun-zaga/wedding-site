@@ -6,6 +6,18 @@ const emptyAddress = (): MailingAddress => ({ street: "", line2: "", city: "", s
 const hasCompleteAddress = (address: MailingAddress) =>
   Boolean(address.street.trim() && address.city.trim() && address.state.trim() && address.zip.trim());
 
+function CopyAddressButtons({ sources, onCopy }: {
+  sources: { key: string; name: string; address: MailingAddress }[];
+  onCopy: (address: MailingAddress) => void;
+}) {
+  if (!sources.length) return null;
+  return <div className="copy-address-options">
+    {sources.map(source => <button type="button" className="add-guest-button" key={source.key}
+      onClick={() => onCopy({ ...source.address })}>Same address as {source.name}</button>)}
+    <p className="small-note">Copies the address below. You can edit it for this guest.</p>
+  </div>;
+}
+
 function AddressFields({
   address,
   onChange,
@@ -93,6 +105,12 @@ export function RsvpSection() {
   const useIndividualAddresses = selectedHousehold?.addressCollectionMode === "Individual" ||
     new Set(selectedHousehold?.members.map(member => (member.lastName || member.displayName.trim().split(/\s+/).slice(1).join(" ")).trim().toLowerCase()).filter(Boolean)).size > 1 ||
     additionalGuests.length > 0;
+
+  const addressSources = [
+    ...(selectedHousehold?.members || []).filter(member => attendingGuestIds.includes(member.guestId))
+      .map(member => ({ key: `named-${member.guestId}`, name: member.displayName, address: individualAddresses[member.guestId] || emptyAddress() })),
+    ...additionalGuests.map((guest, index) => ({ key: `extra-${index}`, name: guest.name.trim() || `Guest ${index + 1}`, address: additionalGuestAddresses[index] || emptyAddress() })),
+  ].filter(source => hasCompleteAddress(source.address));
 
   const searchGuests = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -389,6 +407,8 @@ export function RsvpSection() {
                     .map(member => (
                       <div className="individual-address-card" key={`address-${member.guestId}`}>
                         <h4>{member.displayName}</h4>
+                        <CopyAddressButtons sources={addressSources.filter(source => source.key !== `named-${member.guestId}`)}
+                          onCopy={address => setIndividualAddresses(current => ({ ...current, [member.guestId]: address }))} />
                         <AddressFields
                           address={individualAddresses[member.guestId] || emptyAddress()}
                           onChange={address => setIndividualAddresses(current => ({ ...current, [member.guestId]: address }))}
@@ -400,6 +420,8 @@ export function RsvpSection() {
                   {additionalGuests.map((guest, index) => (
                     <div className="individual-address-card" key={`extra-address-${index}`}>
                       <h4>{guest.name.trim() || `Guest ${index + 1}`}</h4>
+                      <CopyAddressButtons sources={addressSources.filter(source => source.key !== `extra-${index}`)}
+                        onCopy={address => setAdditionalGuestAddresses(current => ({ ...current, [index]: address }))} />
                       <AddressFields
                         address={additionalGuestAddresses[index] || emptyAddress()}
                         onChange={address => setAdditionalGuestAddresses(current => ({ ...current, [index]: address }))}

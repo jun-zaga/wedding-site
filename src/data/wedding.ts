@@ -18,9 +18,6 @@ export const scheduleDays: ScheduleDay[] = [
     { time: "5:00 PM", title: "Dinner" }, { time: "6:00 PM", title: "Toasts & Speeches" },
     { time: "7:00 PM", title: "First Dance" }, { time: "7:30 PM", title: "Open Dancing" },
     { time: "11:30 PM", title: "Last Dance" }, { time: "12:00 AM", title: "Goodnight" }
-  ]},
-  { day: "Day Three", date: "Sunday · June 6, 2027 · Jordan and Alexandra Absent", events: [
-    { time: "8:00 AM", title: "Cleanup" }, { time: "11:00 AM", title: "Farewells" }, { time: "12:00 PM", title: "Venue Close" }
   ]}
 ];
 
