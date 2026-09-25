@@ -157,8 +157,7 @@ function buildHouseholdResult(key, guests) {
   const householdName = primary.household || primary.displayName;
 
   const lastNames = [...new Set(members.map(g => normalize(g.lastName || g.displayName.split(/\s+/).slice(1).join(' '))).filter(Boolean))];
-  const isFamily = members.some(g => normalize(g.invitationType) === 'family');
-  const addressCollectionMode = isFamily || lastNames.length > 1 ? 'Individual' : 'Shared';
+  const addressCollectionMode = lastNames.length > 1 ? 'Individual' : 'Shared';
 
   return {
     household: householdName,

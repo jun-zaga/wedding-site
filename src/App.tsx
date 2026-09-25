@@ -26,8 +26,7 @@ function App() {
           <a href="#story" onClick={closeMenu}>Our Story</a>
           <a href="#details" onClick={closeMenu}>Details</a>
           <a href="#gallery" onClick={closeMenu}>Gallery</a>
-          <a href="#registry" onClick={closeMenu}>Registry</a>
-          <a href="#honeymoon" onClick={closeMenu}>Honeymoon</a>
+          <a href="#registry" onClick={closeMenu}>Registry & Honeymoon</a>
           <a className="nav-rsvp" href="#rsvp" onClick={closeMenu}>RSVP</a>
         </div>
       </nav>
@@ -166,50 +165,24 @@ function App() {
         </div>
       </section>
 
-      <section className="registry section" id="registry">
-        <div className="section-heading">
+      <section className="registry honeymoon section" id="registry">
+        <div className="honeymoon-card" id="honeymoon">
           <p className="eyebrow">With love</p>
-          <h2>Registry</h2>
-          <p className="lead narrow">
-            Your presence is the greatest gift. For anyone who would like to help
-            us begin married life, our registry is available below.
-          </p>
-        </div>
-
-        <a
-          className="secondary-button registry-button"
-          href={AMAZON_REGISTRY}
-          target="_blank"
-          rel="noreferrer"
-        >
-          View our Amazon registry
-        </a>
-      </section>
-
-      <section className="honeymoon section" id="honeymoon">
-        <div className="honeymoon-card">
-          <p className="eyebrow">Our first adventure</p>
-          <h2>Honeymoon Fund</h2>
+          <h2>Registry & Honeymoon Fund</h2>
           <p className="honeymoon-copy">
-            Your presence at our wedding is more than enough. If you would like
-            to help us celebrate our first adventure as newlyweds, we would be
-            incredibly grateful for a contribution toward our honeymoon.
+            Your presence is the greatest gift. If you would like to help us
+            begin married life, explore our registry or contribute to our
+            honeymoon fund and our first adventure as newlyweds.
           </p>
-
           <div className="honeymoon-actions">
-            <a
-              className="honeymoon-button"
-              href={VENMO_URL}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Contribute with Venmo ♡
+            <a className="secondary-button registry-button" href={AMAZON_REGISTRY} target="_blank" rel="noreferrer">
+              Explore our registry
             </a>
-            <p className="honeymoon-username">
-              Venmo <strong>@junzaga22</strong>
-            </p>
+            <a className="honeymoon-button" href={VENMO_URL} target="_blank" rel="noreferrer">
+              Help build our honeymoon fund ♡
+            </a>
+            <p className="honeymoon-username">Venmo <strong>@junzaga22</strong></p>
           </div>
-
           <p className="honeymoon-note">
             Gifts are never expected — celebrating with you is what matters most.
           </p>

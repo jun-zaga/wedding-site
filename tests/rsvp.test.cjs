@@ -49,3 +49,13 @@ test('missing surname columns fall back to full display names', () => {
   const data = rows(); data[0][2]=''; data[1][2]='';
   const {ctx} = setup(data); assert.equal(ctx.doGet({parameter:{action:'search',name:'Colten'}}).results[0].addressCollectionMode,'Individual');
 });
+
+test('same-surname family uses one shared mailing address', () => {
+  const data = rows(); data[1][2] = 'Smith'; data[0][7] = 'Family'; data[1][7] = 'Family';
+  const {ctx, post} = setup(data);
+  assert.equal(ctx.doGet({parameter:{action:'search',name:'Colten'}}).results[0].addressCollectionMode, 'Shared');
+  assert.equal(post({primaryGuestId:'1',attendingGuestIds:['1','2'],address}).success, true);
+  const saved = ctx.doGet({parameter:{action:'search',name:'Colten'}}).results[0];
+  assert.equal(saved.members[0].address.street, address.street);
+  assert.equal(saved.members[1].address.street, address.street);
+});

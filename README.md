@@ -43,7 +43,7 @@ Expected filenames:
 
 ## RSVP maintenance
 
-The active page uses `src/components/RsvpSection.tsx`. Mixed surnames and family invitations collect an address per attending named guest. Added guests also get individual addresses. The Guests sheet should contain one row per named guest with their First Name and Last Name; the invitation label is only a grouping label. Reserved Seats are summed across the invitation rows (do not repeat the full party allowance on each row).
+The active page uses `src/components/RsvpSection.tsx`. Mixed-surname invitations collect an address per attending named guest. Same-surname families share one mailing address. Added guests also get individual addresses. The Guests sheet should contain one row per named guest with their First Name and Last Name; the invitation label is only a grouping label. Reserved Seats are summed across the invitation rows (do not repeat the full party allowance on each row).
 
 Run `npm test` for RSVP regression checks and `npm run build` for production validation.
 
