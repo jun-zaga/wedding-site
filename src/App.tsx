@@ -121,6 +121,13 @@ function App() {
           </p>
         </div>
 
+        <div className="schedule-flourish" aria-hidden="true">
+          <span className="ring-band band-left" />
+          <span className="schedule-pear schedule-pear-left" />
+          <span className="schedule-oval" />
+          <span className="schedule-pear schedule-pear-right" />
+          <span className="ring-band band-right" />
+        </div>
         <div className="weekend-schedule">
           {scheduleDays.map((day) => (
             <article className="schedule-day" key={day.day}>
@@ -144,6 +151,13 @@ function App() {
               </div>
             </article>
           ))}
+        </div>
+        <div className="jordan-ring-flourish" aria-hidden="true">
+          <span className="jordan-ring-line">
+            <span className="jordan-gold-line jordan-gold-top" />
+            <span className="jordan-black-line" />
+            <span className="jordan-gold-line jordan-gold-bottom" />
+          </span>
         </div>
       </section>
 

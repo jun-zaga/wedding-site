@@ -13,11 +13,11 @@ export const scheduleDays: ScheduleDay[] = [
     { time: "4:00 PM", title: "Venue Closes", detail: "Please return for the ceremony and reception tomorrow." }
   ]},
   { day: "Day Two", date: "Saturday · June 5, 2027", events: [
-    { time: "8:00 AM", title: "Getting Ready" }, { time: "2:30 PM", title: "Guests Arrive" },
-    { time: "3:00 PM", title: "Ceremony" }, { time: "3:30 PM", title: "Cocktail Hour" },
-    { time: "5:00 PM", title: "Dinner" }, { time: "6:00 PM", title: "Toasts & Speeches" },
-    { time: "7:00 PM", title: "First Dance" }, { time: "7:30 PM", title: "Open Dancing" },
-    { time: "11:30 PM", title: "Last Dance" }, { time: "12:00 AM", title: "Goodnight" }
+    { time: "2:30 PM", title: "Guests Arrive" },
+    { time: "4:00 PM", title: "Ceremony" }, { time: "4:45 PM", title: "Cocktail Hour" },
+    { time: "5:30 PM", title: "Dinner" }, { time: "6:00 PM", title: "Toasts & Speeches" },
+    { time: "6:30 PM", title: "First Dance" }, { time: "6:45 PM", title: "Open Dancing" },
+    { time: "8:00 PM", title: "Goodnight" }
   ]}
 ];
 
