@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { RsvpSection } from "./components/RsvpSection";
+import { VenueSection } from "./components/VenueSection";
 import { AMAZON_REGISTRY_URL as AMAZON_REGISTRY, WEDDING_DATE, galleryPhotos, scheduleDays } from "./data/wedding";
 
 const VENMO_URL = "https://venmo.com/junzaga22";
@@ -49,7 +50,7 @@ function App() {
 
       <section className="intro section">
         <p className="eyebrow">Save the date</p>
-        <h2>We cannot wait to celebrate with you.</h2>
+        <h2>We cannot wait to celebrate with you!</h2>
         <p className="lead">
           Welcome to our wedding website. Find the schedule, travel information,
           registry, honeymoon fund, and everything else you need for the weekend.
@@ -93,11 +94,11 @@ function App() {
           <article className="detail-card">
             <span className="detail-number">02</span>
             <h3>Dress Code</h3>
-            <p>Sunday Best</p>
+            <p>Semi-Formal</p>
             <p>
               Wear something neat and comfortable that you would wear to church
-              or a nice family gathering. Please avoid graphic tees, ripped jeans,
-              and overly casual attire.
+              or a work gathering. Please avoid graphic tees, jeans,
+              and overly casual attire. No sweats or loungeware.
             </p>
           </article>
 
@@ -111,6 +112,8 @@ function App() {
           </article>
         </div>
       </section>
+
+      <VenueSection />
 
       <section className="schedule section">
         <div className="section-heading">

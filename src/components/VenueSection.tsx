@@ -1,7 +1,7 @@
-import { GOOGLE_MAPS_URL, VENUE_ADDRESS } from "../data/wedding";
+import { GOOGLE_MAPS_URL, VENUE_COORDINATES } from "../data/wedding";
 
 export function VenueSection() {
-  const embedUrl = `https://www.google.com/maps?q=${encodeURIComponent(VENUE_ADDRESS)}&output=embed`;
+  const embedUrl = `https://maps.google.com/maps?q=${VENUE_COORDINATES}&z=17&t=k&output=embed`;
 
   return (
     <section className="venue section" id="venue">
@@ -17,7 +17,7 @@ export function VenueSection() {
         <div className="venue-map-shell">
           <iframe
             className="venue-map"
-            title="Map to Gallatin River Hideaway"
+            title="Satellite map to Gallatin River Hideaway Creekside"
             src={embedUrl}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
