@@ -96,8 +96,8 @@ function App() {
             <h3>Dress Code</h3>
             <p>Semi-Formal</p>
             <p>
-              Wear something neat and comfortable that you would wear to church
-              or a work gathering. Please avoid graphic tees, jeans,
+              Suits and dresses.
+              Please avoid graphic tees, jeans,
               and overly casual attire. No sweats or loungeware.
             </p>
           </article>

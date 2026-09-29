@@ -18,7 +18,7 @@ export const scheduleDays: ScheduleDay[] = [
     { time: "4:00 PM", title: "Ceremony" }, { time: "4:45 PM", title: "Cocktail Hour" },
     { time: "5:30 PM", title: "Dinner" }, { time: "6:00 PM", title: "Toasts & Speeches" },
     { time: "6:30 PM", title: "First Dance" }, { time: "6:45 PM", title: "Open Dancing" },
-    { time: "8:00 PM", title: "Goodnight" }
+    { time: "9:00 PM", title: "Goodnight" }
   ]}
 ];
 
