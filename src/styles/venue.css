@@ -93,3 +93,55 @@
     padding: 30px 24px 34px;
   }
 }
+
+
+/* PARKING MAP PLACEHOLDER */
+.parking-map-slot {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px dashed rgba(75, 105, 87, 0.35);
+  border-radius: 18px;
+  background: rgba(238, 245, 241, 0.65);
+}
+
+.parking-map-slot img {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: contain;
+}
+
+.parking-map-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  color: var(--green);
+}
+
+.parking-map-placeholder span {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.parking-map-placeholder small {
+  color: #718078;
+}
+
+.parking-map-slot.has-parking-map {
+  min-height: 0;
+  border-style: solid;
+  background: var(--paper);
+}
+
+.parking-map-slot.has-parking-map .parking-map-placeholder {
+  display: none;
+}
