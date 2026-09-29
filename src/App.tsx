@@ -228,7 +228,7 @@ function App() {
             <p>Parking is immediately inside the venue entrance.</p>
             <div className="parking-map-slot">
               <img
-                src="/parking-map.jpg"
+                src="/parking-map.png"
                 alt="Parking map"
                 onLoad={(event) => event.currentTarget.parentElement?.classList.add("has-parking-map")}
                 onError={(event) => { event.currentTarget.style.display = "none"; }}
