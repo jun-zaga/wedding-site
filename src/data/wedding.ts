@@ -4,7 +4,8 @@ export type ScheduleDay = { day: string; date: string; events: ScheduleEvent[] }
 export const WEDDING_DATE = new Date("2027-06-05T15:00:00-06:00");
 export const AMAZON_REGISTRY_URL = "https://www.amazon.com/wedding/guest-view/1A5HNETHKG9HF";
 export const VENUE_ADDRESS = "135 Hideaway Drive, Bozeman, MT 59718";
-export const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/oxgefjNVxgvxe9MH9";
+export const VENUE_COORDINATES = "45.67016833890384,-111.20089713863142";
+export const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${VENUE_COORDINATES}`;
 export const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpi6FwXM41decufY7kqJUxQttYz_q19tyWq24OYiYOywHTIJphOgXBVY5lBiQlyMLn/exec";
 
 export const scheduleDays: ScheduleDay[] = [
@@ -17,7 +18,7 @@ export const scheduleDays: ScheduleDay[] = [
     { time: "4:00 PM", title: "Ceremony" }, { time: "4:45 PM", title: "Cocktail Hour" },
     { time: "5:30 PM", title: "Dinner" }, { time: "6:00 PM", title: "Toasts & Speeches" },
     { time: "6:30 PM", title: "First Dance" }, { time: "6:45 PM", title: "Open Dancing" },
-    { time: "8:00 PM", title: "Goodnight" }
+    { time: "9:00 PM", title: "Goodnight" }
   ]}
 ];
 
