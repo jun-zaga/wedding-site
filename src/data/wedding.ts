@@ -6,7 +6,7 @@ export const AMAZON_REGISTRY_URL = "https://www.amazon.com/wedding/guest-view/1A
 export const VENUE_ADDRESS = "135 Hideaway Drive, Bozeman, MT 59718";
 export const VENUE_COORDINATES = "45.67016833890384,-111.20089713863142";
 export const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${VENUE_COORDINATES}`;
-export const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpi6FwXM41decufY7kqJUxQttYz_q19tyWq24OYiYOywHTIJphOgXBVY5lBiQlyMLn/exec";
+export const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwU-LTnVvbAOuMKHoHuPIa-o58BesTEuN4ZtH7j2x7J-eFOUGhcClYnIxcSOpHbwMDP/exec";
 
 export const scheduleDays: ScheduleDay[] = [
   { day: "Day One", date: "Friday · June 4, 2027", events: [
