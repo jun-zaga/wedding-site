@@ -214,11 +214,11 @@ function App() {
         <div className="faq-grid">
           <details>
             <summary>Can I bring a plus-one?</summary>
-            <p>Your invitation will show everyone included in your reserved seats.</p>
+            <p>Only if a plus-one is listed on your invitation. Search for your name in the RSVP section to see everyone invited. If your invitation includes an unnamed plus-one, you can enter their name when you reply.</p>
           </details>
           <details>
             <summary>Are children invited?</summary>
-            <p>Please use the guest names shown on your invitation.</p>
+            <p>Yes, please use the guest names shown on your invitation. There will be a playground on site for children to play on!</p>
           </details>
           <details>
             <summary>Is there parking?</summary>
