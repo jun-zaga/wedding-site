@@ -19,6 +19,24 @@ function setup(rows) {
 }
 const rows=()=>[['G001','Cousin','Smith','Cousin invitation','Pending',''],['G002','Plus one','','Cousin invitation','Pending',''],['G003','Solo','Jones','','Pending','']];
 const payload=()=>({primaryGuestId:'G001',attendingGuestIds:['G001','G002'],guestNames:[{guestId:'G002',firstName:'Alex',lastName:'Brown'}],individualAddresses:[{guestId:'G001',address},{guestId:'G002',address}]});
+test('Gregory full-name search returns Gregory and Carrie together',()=>{
+  const s=setup([['G001','Gregory','Stein','Dad and Mom Stein','Pending',''],['G002','Carrie','Stein',' Dad  and Mom Stein ','Pending','']]);
+  for (const query of ['Gregory Stein',' Gregory   Stein ','Stein Gregory','Carrie Stein']) {
+    const result=s.search(query);assert.equal(result.apiVersion,'guest-rows-v2');
+    assert.equal(result.results.length,1);assert.equal(result.results[0].members.length,2);
+    assert.equal(result.results[0].members[0].displayName,'Gregory Stein');
+    assert.equal(result.results[0].members[1].displayName,'Carrie Stein');
+    assert.equal(result.approximate,false);
+  }
+  assert.equal(s.search('Gregoy Stein').approximate,true);
+  assert.equal(s.search('Gregoy Stein').results[0].members.length,2);
+  assert.equal(s.search('Completely Unknown').results.length,0);
+  assert.equal(s.post({primaryGuestId:'G001',attendingGuestIds:['G001']}).success,true);
+  assert.equal(s.data[1][5],'Yes');assert.equal(s.data[2][5],'No');
+  const saved=s.search('Gregory Stein').results[0];
+  assert.equal(saved.members[0].attending,'Yes');assert.equal(saved.members[1].attending,'No');
+  assert.equal(s.logs[2][1],'G002');assert.equal(s.logs[2][6],'No');
+});
 test('only explicitly listed plus-one appears, with its own ID',()=>{
   const s=setup(rows()); const result=s.search('Cousin').results[0];
   assert.equal(result.members.length,2); assert.equal(result.members[1].guestId,'G002'); assert.equal(result.members[1].isUnnamed,true);

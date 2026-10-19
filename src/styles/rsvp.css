@@ -1,10 +1,16 @@
 /* RSVP */
 
+.attendance-options { display: flex; flex-wrap: wrap; gap: 10px; }
+.attendance-options button { padding: 12px 16px; border: 1px solid var(--green); border-radius: 8px; background: transparent; color: var(--green); font: inherit; cursor: pointer; }
+.attendance-options button[aria-pressed="true"] { background: var(--green); color: white; }
+.attendance-options button:focus-visible { outline: 3px solid var(--rose); outline-offset: 3px; }
+.attendance-options button:disabled { opacity: .6; cursor: wait; }
+
 .rsvp {
   display: grid;
 
   grid-template-columns:
-    0.8fr 1.2fr;
+    minmax(0, 0.8fr) minmax(0, 1.2fr);
 
   gap:
     clamp(45px, 9vw, 120px);
@@ -16,6 +22,8 @@
   position: sticky;
   top: 120px;
 }
+
+.rsvp > div, .rsvp-form, .rsvp-form fieldset { min-width: 0; }
 
 .rsvp-copy p:not(.eyebrow) {
   color: #626e65;

@@ -1,12 +1,13 @@
 const GUESTS_SHEET = 'Guests';
 const RESPONSES_SHEET = 'RSVP Responses';
+const RSVP_API_VERSION = 'guest-rows-v2';
 
 function doGet(e) {
   try {
     const action = String((e && e.parameter && e.parameter.action) || '').toLowerCase();
     if (action !== 'search') return jsonResponse({ success: false, message: 'Unknown action.' });
 
-    const query = normalize((e.parameter && e.parameter.name) || '');
+    const query = normalizeName((e.parameter && e.parameter.name) || '');
     if (!query) return jsonResponse({ success: true, results: [] });
 
     const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -20,17 +21,21 @@ function doGet(e) {
     validateGuestHeaders(headers);
     const guests = values.slice(1).map((row, index) => guestFromRow(row, index + 2, headers)).filter(Boolean);
 
-    const matched = guests.filter(g =>
-      !g.isUnnamed && (normalize(g.displayName).includes(query) ||
-      normalize(g.firstName).includes(query) ||
-      normalize(g.lastName || g.displayName.split(/\s+/).slice(1).join(' ')).includes(query) ||
-      normalize(g.household).includes(query))
-    );
+    const tokens = query.split(' ');
+    let matched = guests.filter(g => !g.isUnnamed && tokens.every(token =>
+      normalizeName(g.displayName).split(' ').some(part => part.includes(token))));
+    let approximate = false;
+    if (!matched.length) {
+      matched = guests.filter(g => !g.isUnnamed && tokens.every(token =>
+        normalizeName(g.displayName).split(' ').some(part => part === token ||
+          (token.length >= 4 && part.length >= 4 && oneEditApart(token, part)))));
+      approximate = matched.length > 0;
+    }
 
     const householdKeys = [...new Set(matched.map(g => householdKey(g)))];
     const results = householdKeys.map(key => buildHouseholdResult(key, guests)).filter(Boolean);
 
-    return jsonResponse({ success: true, results: results });
+    return jsonResponse({ success: true, results: results, approximate: approximate });
   } catch (error) {
     return jsonResponse({ success: false, message: error.message || String(error) });
   }
@@ -126,7 +131,7 @@ function guestFromRow(row, sheetRow, headers) {
 }
 
 function householdKey(guest) {
-  return guest.household ? 'household:' + guest.household : 'guest:' + guest.guestId;
+  return guest.household ? 'household:' + normalize(guest.household) : 'guest:' + guest.guestId;
 }
 
 function buildHouseholdResult(key, guests) {
@@ -183,10 +188,37 @@ function assignResponse(row, headers, header, value) {
 }
 
 function normalize(value) {
-  return String(value || '').trim().toLowerCase();
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
 function jsonResponse(payload) {
+  payload.apiVersion = RSVP_API_VERSION;
   return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function normalizeName(value) {
+  return normalize(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ');
+}
+
+// One insertion, deletion, substitution or adjacent transposition. Used only
+// when exact name-token matching finds no invitation; the guest chooses a result.
+function oneEditApart(a, b) {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  if (a.length === b.length) {
+    const different = [];
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) different.push(i);
+    if (different.length === 1) return true;
+    return different.length === 2 && different[1] === different[0] + 1 &&
+      a[different[0]] === b[different[1]] && a[different[1]] === b[different[0]];
+  }
+  const short = a.length < b.length ? a : b;
+  const long = a.length < b.length ? b : a;
+  let i = 0, j = 0, skipped = false;
+  while (i < short.length && j < long.length) {
+    if (short[i] === long[j]) { i++; j++; }
+    else { if (skipped) return false; skipped = true; j++; }
+  }
+  return true;
 }
 

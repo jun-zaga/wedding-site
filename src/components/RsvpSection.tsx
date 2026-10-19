@@ -7,6 +7,7 @@ export function RsvpSection() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [searched, setSearched] = useState(false);
+  const [approximate, setApproximate] = useState(false);
   const [results, setResults] = useState<HouseholdResult[]>([]);
   const [party, setParty] = useState<HouseholdResult | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -18,13 +19,17 @@ export function RsvpSection() {
     setAnswers(Object.fromEntries(value.members.map(g => [g.guestId, g.attending || ""])));
   };
   const search = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); setBusy(true); setError(""); setResults([]); setSearched(false);
+    event.preventDefault(); setBusy(true); setError(""); setResults([]); setSearched(false); setApproximate(false);
     try {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=search&name=${encodeURIComponent(searchName.trim())}`);
       const data = await response.json();
       if (!data.success) throw new Error(data.message || "Search failed.");
+      if (data.apiVersion !== "guest-rows-v2") {
+        throw new Error("The RSVP service needs an update. Please contact Jordan and Alexandra so they can help with your invitation.");
+      }
+      setApproximate(Boolean(data.approximate));
       setResults(data.results || []); setSearched(true);
-    } catch { setError("We could not search the guest list. Please try again."); }
+    } catch (e) { setError(e instanceof Error ? e.message : "We could not search the guest list. Please try again."); }
     finally { setBusy(false); }
   };
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -58,6 +63,7 @@ export function RsvpSection() {
       : !party ? <div className="rsvp-lookup"><form className="rsvp-form" onSubmit={search}>
         <label>Find your invitation<input value={searchName} onChange={e => setSearchName(e.target.value)} required placeholder="Enter your name" /></label>
         <button className="primary-button form-button" disabled={busy}>{busy ? "Searching…" : "Find My Invitation"}</button></form>
+        {approximate && <p role="status">We found these similar names. Please choose only your invitation.</p>}
         <div className="search-results">{results.map(result => <button type="button" className="household-result" key={result.primaryGuestId} onClick={() => choose(result)}>
           <strong>{result.household}</strong><span className="invitation-members">{result.members.map(g => g.displayName).join(" · ")}</span></button>)}</div>
         {searched && !results.length && <p role="status">No invitation found. Try your first or last name, or contact us for help.</p>}</div>
@@ -65,9 +71,14 @@ export function RsvpSection() {
         <div className="selected-household"><p className="eyebrow">Your invitation</p><h3>{party.household}</h3>
           <button type="button" className="change-invitation" onClick={() => {setParty(null); setSearched(false); setError("");}}>Search again</button></div>
         <fieldset className="guest-selection"><legend>Who will be attending?</legend>
+          <p className="small-note">Choose a response for each person. People on the same invitation can reply differently.</p>
           {party.members.map(g => <div className="individual-address-card" key={g.guestId}>
-            <label>{g.displayName}<select required value={answers[g.guestId] || ""} onChange={e => setAnswers(a => ({...a, [g.guestId]: e.target.value}))}>
-              <option value="">Please choose</option><option value="Yes">Attending</option><option value="No">Not attending</option></select></label>
+            <h4 id={`guest-${g.guestId}`}>{g.displayName}</h4>
+            <div className="attendance-options" role="group" aria-labelledby={`guest-${g.guestId}`}>
+              {([['Yes', 'Attending'], ['No', 'Not attending']] as const).map(([value, label]) =>
+                <button key={value} type="button" disabled={busy} aria-pressed={answers[g.guestId] === value}
+                  onClick={() => setAnswers(a => ({...a, [g.guestId]: value}))}>{label}</button>)}
+            </div>
             {g.isUnnamed && answers[g.guestId] === "Yes" && <div className="address-grid">
               <label>Guest first name<input required maxLength={100} value={names[g.guestId]?.firstName || ""} onChange={e => setNames(n => ({...n, [g.guestId]: {...(n[g.guestId] || {firstName: "", lastName: ""}), firstName: e.target.value}}))} /></label>
               <label>Guest last name<input required maxLength={100} value={names[g.guestId]?.lastName || ""} onChange={e => setNames(n => ({...n, [g.guestId]: {...(n[g.guestId] || {firstName: "", lastName: ""}), lastName: e.target.value}}))} /></label></div>}
