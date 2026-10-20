@@ -65,7 +65,7 @@ function App() {
           <p>
             We met after moving to Bozeman, and what started with an invitation
             to church grew into friendship, a mutual crush, plenty of adventures,
-            and eventually the easiest yes of our lives.
+            and eventually the easiest "I do" of our lives.
           </p>
           <p>
             We are so excited to celebrate this next chapter with the people we love most.
