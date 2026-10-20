@@ -49,6 +49,21 @@ function App() {
       </section>
 
       <section className="intro section">
+        <svg className="geese-pair" viewBox="0 0 240 140" role="img" aria-label="Two geese facing each other with a heart between them">
+          <defs>
+            <g id="wedding-goose" fill="var(--paper)" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 105 Q28 91 44 92 Q65 93 69 78 L70 49 Q69 33 80 29 Q94 25 98 35 Q102 44 91 49 L87 80 Q89 100 70 111 Q44 125 20 105Z" />
+              <path d="M34 103 Q48 88 67 100 Q57 114 38 106" fill="var(--blush)" />
+              <path d="M97 37 L109 42 L97 46" fill="var(--gold)" />
+              <circle cx="90" cy="36" r="1.7" fill="currentColor" stroke="none" />
+              <path d="M54 117 L51 128 M67 115 L66 128 M45 129 L57 129 M61 129 L73 129" stroke="var(--gold)" />
+            </g>
+          </defs>
+          <use href="#wedding-goose" />
+          <use href="#wedding-goose" transform="translate(240 0) scale(-1 1)" />
+          <path d="M120 28 C105 18 108 9 115 10 Q120 10 120 15 Q120 10 125 10 C132 9 135 18 120 28Z" fill="var(--rose)" />
+          <path d="M22 136 Q120 130 218 136" fill="none" stroke="var(--gold)" strokeWidth="1.5" />
+        </svg>
         <p className="eyebrow">Save the date</p>
         <h2>We cannot wait to celebrate with you!</h2>
         <p className="lead">
