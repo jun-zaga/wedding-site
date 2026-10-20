@@ -446,55 +446,54 @@ footer a { display:inline-block; margin-top:12px; }
   .ring-band { width:48px; }
 }
 
-/* Burgundy ribbons and warm gold picture frames. */
+/* Burgundy accents with a few keepsake-style gold frames. */
 :root {
   --burgundy: #752d43;
   --gold-light: #ead7a5;
 }
 .section .eyebrow { color: var(--burgundy); }
 .details .eyebrow { color: var(--gold-light); }
-.hero::after {
+.nav-rsvp { background: rgba(117, 45, 67, .35); }
+
+/* A fine raised edge follows the portrait's existing arch. */
+.story-image {
+  border: 3px solid #baa06b;
+  box-shadow:
+    0 0 0 1px #8d7548,
+    0 0 0 3px #ecdfbd,
+    0 0 0 4px rgba(141, 117, 72, .35),
+    0 22px 48px rgba(75, 105, 87, .13);
+}
+.schedule-day-top span, .schedule-event h3 { color: var(--burgundy); }
+
+/* Only two gallery photographs receive a frame and an ivory mat. */
+.photo-1, .photo-9 {
+  padding: clamp(5px, .8vw, 10px);
+  border: 2px solid #baa06b;
+  border-radius: 3px;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px rgba(141, 117, 72, .45),
+    inset 0 0 0 1px #ecdfbd,
+    0 12px 28px rgba(75, 105, 87, .12);
+}
+
+/* Small corner details echo stationery rather than enclosing every card. */
+.honeymoon-card::after {
   content: "";
   position: absolute;
-  inset: 94px clamp(12px, 3vw, 44px) 22px;
-  border: 1px solid rgba(234, 215, 165, .65);
-  box-shadow: 0 0 0 5px rgba(117, 45, 67, .22);
+  inset: 15px;
+  border-radius: 15px;
+  background:
+    linear-gradient(var(--gold), var(--gold)) left top / 32px 1px,
+    linear-gradient(var(--gold), var(--gold)) left top / 1px 32px,
+    linear-gradient(var(--gold), var(--gold)) right bottom / 32px 1px,
+    linear-gradient(var(--gold), var(--gold)) right bottom / 1px 32px;
+  background-repeat: no-repeat;
   pointer-events: none;
 }
-.nav-rsvp { border-color: var(--gold-light); background: rgba(117, 45, 67, .48); }
-.story-image {
-  border: 5px solid var(--gold);
-  box-shadow: 0 0 0 2px var(--burgundy), inset 0 0 0 2px var(--gold-light), 0 24px 60px rgba(75, 105, 87, .14);
-}
-.details {
-  border-block: 4px double var(--gold);
-}
-.detail-grid { background: var(--gold); border: 1px solid var(--gold); }
-.detail-card { box-shadow: inset 0 0 0 7px rgba(234, 215, 165, .06); }
-.schedule-day, .honeymoon-card {
-  border: 1px solid var(--gold);
-  outline: 1px solid rgba(117, 45, 67, .35);
-  outline-offset: 4px;
-  box-shadow: inset 0 0 0 6px var(--paper), inset 0 0 0 7px rgba(199, 173, 122, .55), 0 18px 48px rgba(117, 45, 67, .08);
-}
-.schedule-day-top { border-bottom-color: var(--gold); }
-.schedule-day-top span, .schedule-event h3 { color: var(--burgundy); }
-.photo-tile {
-  border: 5px solid var(--gold);
-  box-shadow: 0 0 0 1px var(--burgundy), 0 12px 28px rgba(117, 45, 67, .12);
-  padding: 3px;
-  background: var(--gold-light);
-}
-.venue-layout { border: 2px solid var(--gold); box-shadow: 0 0 0 3px rgba(117, 45, 67, .16), 0 22px 60px rgba(49, 89, 67, .09); }
-.venue-divider { background: linear-gradient(90deg, var(--burgundy), var(--gold), var(--soft-rose)); }
+.venue-divider { background: linear-gradient(90deg, var(--burgundy), var(--soft-rose), transparent); }
 .registry-button { border-color: var(--burgundy); color: var(--burgundy); }
-.honeymoon-button { background: var(--burgundy); border-color: var(--gold); }
-.faq details { border-top-color: rgba(199, 173, 122, .65); }
+.honeymoon-button { background: var(--burgundy); border-color: var(--burgundy); }
 .faq summary { color: var(--burgundy); }
-footer { border-top: 4px double var(--gold); }
-.footer-names { color: var(--gold-light); }
 .geese-pair { display: block; width: clamp(160px, 28vw, 220px); height: auto; margin: 0 auto 24px; color: var(--burgundy); }
-@media (max-width: 680px) {
-  .photo-tile { border-width: 4px; padding: 2px; }
-  .hero::after { inset: 88px 12px 16px; }
-}
