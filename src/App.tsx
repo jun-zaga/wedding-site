@@ -35,7 +35,7 @@ function App() {
       <section className="hero" id="home">
         <div className="hero-overlay" />
         <div className="hero-content">
-          <p className="eyebrow">We’re getting married</p>
+          <p className="eyebrow">We’re getting married!</p>
           <h1>Jordan <span>&</span> Alexandra</h1>
           <div className="three-stone" aria-hidden="true">
             <span className="pear pear-left" />
